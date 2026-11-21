@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sale Order</title>
+<title>BALAJI SALE ORDER</title>
 <meta name="theme-color" content="#2f3a9e">
 
 <style>
@@ -487,7 +487,7 @@ tr.ponly{display:none}
 </div>
 <div id="fab" class="noprint fabwrap" data-tab="so"><div id="copyMsg" class="cmsg"></div><div id="copyMenu" class="cmenu" hidden><button type="button" data-m="code">Copy Code · Qty</button><button type="button" data-m="name">Copy Product · Qty</button><button type="button" data-m="sheet">Copy Excel Sheet</button></div><div id="fabItems" class="fabitems" hidden><div class="fabrow so-only"><span class="fablab">Database</span><button id="dbBtn" class="copyfab dbfab" type="button" aria-label="Database" title="Database">🗄️</button></div><div class="fabrow so-only"><span class="fablab">Copy</span><button id="copyBtn" class="copyfab" type="button" aria-label="Copy" title="Copy">📋</button></div></div><button id="fabMain" class="fabmain" type="button" aria-label="Menu" title="Menu">＋</button></div>
 <div id="panel">
-<p><b>CSV file chuno.</b> Columns: A Code, B Name, F Group, W Sale List, Y Discount. Net Rate app khud nikalega.</p>
+<p><b>CSV file chuno.</b> Columns: A Code, B Name, C Group, D Sale List, E Discount.</p>
 <div id="dmeta" class="dmeta"></div>
 <input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain" style="width:100%;padding:10px;border:1px dashed var(--pri);border-radius:10px;background:var(--card);color:var(--tx)">
 <p>Ya sheet ka data copy karke paste karo:</p>
@@ -642,16 +642,16 @@ tr.ponly{display:none}
     <div class="fx dbbtns" style="margin-top:10px">
       <button id="dbBackup" class="ghost" type="button">⬇ Back-up</button>
       <button id="dbRestore" class="ghost" type="button">⬆ Import</button>
+      <input type="file" id="dbFile" accept=".json,application/json" hidden>
     </div>
     <div id="dbInfo" class="dbinfo"></div>
-    <textarea id="dbText" hidden rows="4" style="width:100%;margin-top:8px;font-size:12px" placeholder="Back-up text yahan aayega / yahan paste karo"></textarea>
     <div class="dbh"><span class="dbi">#</span><span class="dbe">Est</span><span class="dbd">Date</span><span class="dbp">Party</span><span class="dbx0"></span></div>
     <div id="dbList"></div>
   </details>
 </div>
 <div id="a5"></div>
 <script>
-var KEY="balaji_v3",DATA=[];
+var KEY="balaji_so_v1",DATA=[];
 try{var s0=localStorage.getItem(KEY);if(s0){var p0=JSON.parse(s0);if(p0&&p0.length)DATA=p0}}catch(e){}
 var $=function(i){return document.getElementById(i)};
 function toRows(t){
@@ -672,20 +672,20 @@ function pn(x){var v=parseFloat(String(x==null?"":x).replace(/[,₹%\s]/g,""));r
 function calc(sale,d){var b=sale*(1-d/100);return[b*1.18,b*0.97*1.18,b*0.97*0.98*1.18]}
 var INFO={};
 function parse(t){
-  var rows=toRows(t),out=[],skipped=0,pc=11,hi=(rows[0]||[]).findIndex(function(h){return /pack/i.test(h)});if(hi>=0)pc=hi;
+  var rows=toRows(t),out=[],skipped=0;
   rows.forEach(function(c){
-    var sale=pn(c[22]);
+    var sale=pn(c[3]);
     if(!c[1]||!String(c[1]).trim()||sale==null){skipped++;return}
-    var raw=String(c[24]==null?"":c[24]),d=pn(raw);if(d==null)d=0;else if(raw.indexOf("%")<0&&d>0&&d<1)d=Math.round(d*1e6)/1e4;
+    var raw=String(c[4]==null?"":c[4]),d=pn(raw);if(d==null)d=0;else if(raw.indexOf("%")<0&&d>0&&d<1)d=Math.round(d*1e6)/1e4;
     var k=calc(sale,d);
-    out.push([(c[0]||"").trim(),String(c[1]).trim(),((c[5]||"").trim()||"Other"),k[0],sale,d,k[1],k[2],null,String(c[pc]==null?"":c[pc]).trim(),pn(c[21]),pn(c[20]),String(c[10]==null?"":c[10]).trim(),String(c[48]==null?"":c[48]).trim(),String(c[76]==null?"":c[76]).trim(),String(c[53]==null?"":c[53]).trim(),String(c[90]==null?"":c[90]).trim()]);
+    out.push([(c[0]||"").trim(),String(c[1]).trim(),((c[2]||"").trim()||"Other"),k[0],sale,d,k[1],k[2],null,"",null,null,"","","","",""]);
   });
   INFO={rows:rows.length,cols:rows[0]?rows[0].length:0,head:rows[0]||[],skipped:skipped};
   return out}
 function d2(x){return x<10?"0"+x:""+x}
 function fmtDT(ts,withTime){var d=new Date(ts);return d2(d.getDate())+"-"+d2(d.getMonth()+1)+"-"+d.getFullYear()+(withTime?" "+d2(d.getHours())+":"+d2(d.getMinutes()):"")}
 function showMeta(){
-  var el=$("dmeta"),m=null;try{m=JSON.parse(localStorage.getItem("balaji_meta_v1")||"null")}catch(e){}
+  var el=$("dmeta"),m=null;try{m=JSON.parse(localStorage.getItem("balaji_so_meta_v1")||"null")}catch(e){}
   if(!DATA.length){el.className="dmeta none";el.innerHTML="📅 <b>Main Data:</b> abhi koi CSV nahi chuni";return}
   if(!m){el.className="dmeta old";el.innerHTML="📅 <b>Main Data:</b> "+DATA.length+" products · date pata nahi (CSV dobara chuno)";return}
   el.className="dmeta";
@@ -695,14 +695,14 @@ function showMeta(){
 function gearUpdate(){$("gear").className="gear "+(DATA.length?"green":"red");$("gear").title=DATA.length?DATA.length+" products loaded ✓":"Data nahi hai. CSV chuno"}
 function loadText(t,fi){
   var r=parse(t);
-  if(!r.length){$("msg").textContent="0 products mile. CSV me "+INFO.cols+" columns hain (W aur Y ke liye kam se kam 25 chahiye).";return}
+  if(!r.length){$("msg").textContent="0 products mile. CSV me "+INFO.cols+" columns hain. Chahiye: A Code, B Name, C Group, D Sale List (number), E Discount.";return}
   DATA=r;SO.sync(DATA);
-  try{localStorage.setItem(KEY,JSON.stringify(r));localStorage.setItem("balaji_meta_v1",JSON.stringify({t:Date.now(),m:fi&&fi.mod||null,n:fi&&fi.name||null,c:r.length}))}catch(e){}
+  try{localStorage.setItem(KEY,JSON.stringify(r));localStorage.setItem("balaji_so_meta_v1",JSON.stringify({t:Date.now(),m:fi&&fi.mod||null,n:fi&&fi.name||null,c:r.length}))}catch(e){}
   showMeta();gearUpdate();
-  $("msg").textContent=r.length+" products load hue. Packing mili: "+r.filter(function(x){return x[9]}).length+" products"}
+  $("msg").textContent=r.length+" products load hue"+(INFO.skipped?" ("+INFO.skipped+" rows chhodi: header ya khaali rate)":"")}
 $("file").onchange=function(){var f=this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){loadText(String(rd.result),{name:f.name,mod:f.lastModified})};rd.readAsText(f)};
 $("save").onclick=function(){loadText($("paste").value)};
-$("reset").onclick=function(){DATA=[];SO.sync(DATA);try{localStorage.removeItem(KEY);localStorage.removeItem("balaji_meta_v1")}catch(e){}showMeta();gearUpdate();$("msg").textContent="Data clear ho gaya"};
+$("reset").onclick=function(){DATA=[];SO.sync(DATA);try{localStorage.removeItem(KEY);localStorage.removeItem("balaji_so_meta_v1")}catch(e){}showMeta();gearUpdate();$("msg").textContent="Data clear ho gaya"};
 $("gear").onclick=function(){var p=$("panel");p.style.display=p.style.display==="block"?"none":"block"};
 const SO=(function(){
 const CODE=document.getElementById('q');
@@ -1298,18 +1298,34 @@ function dbSave(){
   dbRender();
   dbMsg("Estimate " + no + " save ho gaya. Naya Estimate no: " + $("estNo").value, "ok");
 }
+async function dbDownload(blob, name){
+  if (window.showSaveFilePicker){
+    try{
+      const h = await window.showSaveFilePicker({ suggestedName: name, types: [{ description: "Back-up", accept: { "application/json": [".json"] } }] });
+      const w = await h.createWritable(); await w.write(blob); await w.close();
+      return "Back-up save ho gaya: " + h.name;
+    }catch(e){ if (e && e.name === "AbortError") return ""; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  return "Back-up file download ho gayi: " + name;
+}
 async function dbBackup(){
   if (!db.length){ dbMsg("Back-up ke liye pehle koi estimate Save karo.", "err"); return; }
-  const payload = { app: "BALAJI_PIPE", v: 1, savedAt: new Date().toISOString(), counter: counter(), db, tc: tcLoad() };
-  const txt = JSON.stringify(payload); const ta = $("dbText"); ta.hidden = false; ta.value = txt;
-  let ok = false;
-  try{ await navigator.clipboard.writeText(txt); ok = true; }catch(e){ try{ ta.focus(); ta.select(); ok = document.execCommand("copy"); }catch(e2){} }
-  dbMsg("Back-up text " + (ok ? "copy ho gaya" : "neeche box me aa gaya, select karke copy karo") + " (" + db.length + " estimate). Kisi safe jagah (WhatsApp / Notes) me paste karke rakh lo.", "ok");
+  const t = new Date(), p2 = n => String(n).padStart(2, "0");
+  const name = "BALAJI_Backup_" + t.getFullYear() + "-" + p2(t.getMonth() + 1) + "-" + p2(t.getDate()) + "_" + p2(t.getHours()) + p2(t.getMinutes()) + ".json";
+  const payload = { app: "BALAJI_PIPE", v: 1, savedAt: t.toISOString(), counter: counter(), db, tc: tcLoad() };
+  const msg = await dbDownload(new Blob([JSON.stringify(payload)], { type: "application/json" }), name);
+  if (msg) dbMsg(msg + " (" + db.length + " estimate)", "ok");
 }
-function dbRestoreText(txt){
-  {
+function dbRestoreFile(file){
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = () => {
     try{
-      const p = JSON.parse(String(txt).trim());
+      const p = JSON.parse(String(fr.result));
       if (!p || !Array.isArray(p.db)) throw new Error("bad");
       let add = 0, upd = 0;
       p.db.forEach(x => {
@@ -1325,12 +1341,14 @@ function dbRestoreText(txt){
       if (!rows.length) $("estNo").value = String(nextNo());
       save(); dbRender(); estCheck();
       dbMsg("Import ho gaya: " + add + " naye, " + upd + " update. Agla Estimate no: " + nextNo(), "ok");
-    }catch(e){ dbMsg("Ye Back-up text sahi nahi lag raha.", "err"); }
-  }
+    }catch(e){ dbMsg("Ye Back-up file sahi nahi lag rahi.", "err"); }
+  };
+  fr.readAsText(file);
 }
 $("dbSave").addEventListener("click", dbSave);
 $("dbBackup").addEventListener("click", dbBackup);
-$("dbRestore").addEventListener("click", () => { const ta = $("dbText"); if (ta.hidden || !ta.value.trim()){ ta.hidden = false; ta.value = ""; ta.focus(); dbMsg("Back-up text is box me paste karo, phir dobara Import dabao.", ""); return; } dbRestoreText(ta.value); });
+$("dbRestore").addEventListener("click", () => $("dbFile").click());
+$("dbFile").addEventListener("change", e => { dbRestoreFile(e.target.files[0]); e.target.value = ""; });
 $("dbList").addEventListener("click", e => {
   const del = e.target.closest("[data-del]");
   if (del){
